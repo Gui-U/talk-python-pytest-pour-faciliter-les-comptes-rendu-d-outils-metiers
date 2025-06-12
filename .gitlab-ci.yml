@@ -1,0 +1,13 @@
+publish:
+  stage: build
+  image: ghcr.io/astral-sh/uv
+  script:
+    - mkdir -p public
+    - uv tool run mkslides build --config-file src/mkslides_config.yml --site-dir public --strict src/slides.md
+  pages: true
+  artifacts:
+    when: on_success
+    expire_in: 1 day
+    paths:
+      - public
+    
