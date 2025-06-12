@@ -9,7 +9,5 @@ uv tool run mkslides serve --config-file src/mkslides_config.yml --strict src/sl
 # Build
 
 ```bash
-mkdir -p public
-
 uv tool run mkslides build --config-file src/mkslides_config.yml --site-dir public --strict src/slides.md
 ```

@@ -1,8 +1,9 @@
 publish:
   stage: build
-  image: ghcr.io/astral-sh/uv
+  image:
+    name: ghcr.io/astral-sh/uv:debian-slim
+    entrypoint: [""]
   script:
-    - mkdir -p public
     - uv tool run mkslides build --config-file src/mkslides_config.yml --site-dir public --strict src/slides.md
   pages: true
   artifacts:
@@ -10,4 +11,3 @@ publish:
     expire_in: 1 day
     paths:
       - public
-    
