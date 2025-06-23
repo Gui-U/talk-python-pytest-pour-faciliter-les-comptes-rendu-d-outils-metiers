@@ -4,6 +4,7 @@ slides:
   # https://revealjs.com/themes/
   theme: white #night
   highlight_theme: monokai
+  separator_vertical: ^\s*-v-\s*$
 revealjs: # https://revealjs.com/config/
   height: 1080
   width: 1920

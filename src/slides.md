@@ -1,49 +1,59 @@
 ---
 title: "Pytest pour faciliter les comptes rendu d'outils métiers"
 ---
+<style>
+.reveal pre code {
+  max-height: 95vh;
+  overflow: auto;
+</style>
 
 # pytest pour faciliter les comptes rendu d'outils métiers
-### Lighting talk rapide
+### Lighting talk
 24 juin 2025 - Meetup Python Grenoble - [turbine.coop](https://turbine.coop/)
 
 ---
 
-# Quelques mots sur le speaker...
+## Quelques mots sur le speaker...
 
-- Ingénieur AI/Devops chez Asygn depuis 6 ans
-- Softeux incompris dans une équipe de hard
+Guillaume Urard
 
----
-
-# Contexte
-- Execution séquentielle des tests : si le premier fail, les autres ne sont pas execéutés
-- De vieux outils avec des sorties diverses
-- Peu lisible lors de l'on-boarding 
-- Execution des "simulations top" systématiquement (avant livraison)
+- Ingénieur AI/Devops depuis 2019
+- Domaines: Embarqué -> IA -> sysadmin -> devops -> embarqué
+- Asygn : PME d'électronique
+- Softeux incompris dans une équipe de hardware<!-- .element: class="fragment" -->
 
 ---
-# L'utilisation de Git et de la CI dans cette équipe
 
+# Contexte du métier
+- Des tests de non regréssion sur du code de description matériel (VHDL/Vérilog) existent
+    - Lancés par des outils métiers propriétaires
+    - Execution séquentielle : si le premier fail, les autres ne sont pas exécutés
+    - Sorties diverses et non standardisées
+- Flow peu lisible lors de l'on-boarding 
+- Blocs indépendants (IP)
+    - Parfois pas si indépendants
+    - "simulations top" nécéssaires systématiquement (et pas que avant livraison)
+
+-v-
+
+## L'utilisation de Git et de la CI dans ce projet
+
+- Mono repo
 - Git en trunk-based
-![truck based illustration](trunck.png)
+- La CI peut rester cassée plusieurs semaines <!-- .element: class="fragment" -->
+
+Bonus : push vendredi soir avant de partir en vacances <!-- .element: class="fragment" -->
+
+![trunk based illustration](trunk.png) <!--  .element: max-height="60vh" -->
+
 <!-- https://posthog.com/product-engineers/trunk-based-development -->
 
----
-- La CI peut rester cassée plusieurs semaines
 
-Bonus : push avant de partir en vacances
-<!-- .element: class="fragment" -->
+-v-
 
----
+## Des tests de non regréssion obscures à lancer...
 
-## Une non reg obscure à lancer...
-<style>
-.reveal pre code {
-  max-height: 90vh;
-  overflow: auto;
-</style>
-
-```bash [|1,3|5|7,11|16]
+```bash [|1,3|5|7,11|15]
 source SETUP/global_setup
 cd DESIGN
 make
@@ -55,17 +65,16 @@ for dir in ${REGMAP_GENERATOR_TEST_DIRS}; do
     test_name=$(basename $(pwd))
     cd MMAP
     for config_path in ../CONFIG/RTL* ../CONFIG/FPGA*; do
-        if [ -d "$config_path" ]; then
         config_name=$(basename $config_path)
         echo "Testing" $test_name "config" $config_name "..."
         output_filename="../../${test_name}_${config_name}_test.txt"
         simu.csh -simulator QUESTA -config ../CONFIG/$config_path -testcase all -nopopup -nowave > $output_filename
-        fi
     done
     cd ../..
 done
 ```
----
+
+-v-
 
 ## ... et à comprendre
 
@@ -86,11 +95,12 @@ $ tree -h
 ├── [7.0K]  TIMER_RTL_test.txt
 └── [7.5K]  TIMER_SLOW_RTL_test.txt
 ```
----
 
-# Constat
+-v-
+
+## Constat
 - De plus en plus difficile d'avoir une vue d'ensemble
-- Un test cassé peut en cacher un autre
+- Un test cassé peut en cacher un autre (fail fast)
 - Mal intégrable en CI
 
 ---
@@ -98,49 +108,121 @@ $ tree -h
 # Pourquoi pytest ?
 
 - Solution éprouvée dans le monde python
+- Nombreux plugins
 - Facilement hackable
+- Divers formats de sortie
+  - HTML
+  - Junit
 - Maitrisé par d'autres équipes
-
-# Diverses itérations
-## Agrégation
-## Ajout du temps
-## Utilisation des outputs htmls (pages) et junit
 
 ---
 
-# Résultat
+# Implémentations et itérations
+
+Un peu de code python mais pas trop car je suis à la bourre...
+
+-v-
+
+## Agrégation
+
+```python [|8-9|7-9|3-5|11-21]
+# read_test.py
+import os, pytest
+
+def log_files():
+    log_files = [f for f in os.listdir(os.path.dirname(__file__)) if f.endswith("_test.txt")]
+    return [os.path.join(os.path.dirname(__file__), f) for f in log_files]
+
+@pytest.mark.parametrize("filename", log_files())
+def test_read_file(filename):
+    assert please_ignore_this_line_and_previous_one(filename)
+
+# the name of function will be displayed in html result with pytest --tb=no
+def please_ignore_this_line_and_previous_one(filename):
+    test_logs = ""
+    assert os.path.exists(filename)
+    with open(filename, "r") as f:
+        print(f.read())  # print all file content, including ###TESTDURATION string
+    with open(filename, "r") as f:
+        for line in f:
+            if line.startswith("###"):
+                test_logs += line
+    return "###TESTRESULT=SUCCESS" in test_logs
+```
+
+-v-
+
+## Ajout du temps et meilleurs noms de test
+
+```python [|11,12,18]
+# conftest.py
+import os, re, pytest
+
+def _extract_duration_from_log(logs):
+    match = re.search(r"###TESTDURATION=([\d.]+)", logs)
+    if match:
+        return float(match.group(1))
+    return 0.00
+
+### Change pytest test duration
+@pytest.hookimpl(tryfirst=True)
+def pytest_report_teststatus(report, config):
+    """This hook is called every time"""
+    if report.when == "call":
+        report.duration = _extract_duration_from_log(report.capstdout)
+
+### Change pytest tests names
+def pytest_itemcollected(item):
+    """change test name, using fixture names"""
+    filename = item.callspec.params["filename"]
+    item._nodeid = os.path.basename(filename).replace("_test.txt", "").replace("_", " ")
+```
+
+---
+
+## Résultat : html
 
 ![pytest_html_white](pytest_html_white.png)
 
----
+-v-
 
-# Outputs
+## Résultat : junit
 
-- .junit
-- html
-
----
-
-# Résultats
+![pytest_junit_white](pytest_html_white.png)
 
 ---
+
+# Bilan
+
+-v-
+
 ## Points positifs
 
-- Lecture en cas de problèmes, permet de faire de l'archéologie
+- Lecture en cas de problèmes, permet de faire de l'archéologie (`git bisect`)
 - Permet aux softeux de comprendre pourquoi leur code ne fonctionne pas (c'est le hardware qui est cassé)
----
+- Mesure le temps de chaque test
+- Principe copié pour les tests de compilation `C`
+
+-v-
 ## Points négatifs
 
-- CI constament cassée à cause du "trunck based"
-- Pas un réflexe pour les devs hardware
-- Lecture uniquement en cas de manque de temps
-- Robustesse moyenne
+- Lecture qui n'est pas un réflexe pour les devs hardware, qui préfèrent les tests locaux
+- Robustesse moyenne <!-- .element: class="fragment" -->
+- CI constament cassée à cause du "trunck based"  <!-- .element: class="fragment" -->
+  - Mails de Gitlab CI déclarés en spam ! <!-- .element: class="fragment" -->
 
----
+-v-
 
-## Points négatifs
 Exemple : 2 dégradations coup sur coup !
+
+_Commit le plus récent_
 
 ![dégradation](degradation.png)
 
+_Commit le plus vieux_
+
 ---
+
+# Merci
+
+-v-
