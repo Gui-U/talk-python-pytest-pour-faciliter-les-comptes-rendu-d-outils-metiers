@@ -1,4 +1,6 @@
-# talk python - pytest pour faciliter les comptes rendu d outils métiers
+# talk python - pytest pour faciliter les comptes rendu d'outils métiers
+
+Talk expliquant comment pytest est utilisé pour parser et faire des comptes rendus d'outils métiers dans ma boite.
 
 # Dev
 
