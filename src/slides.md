@@ -7,7 +7,7 @@ title: "Pytest pour faciliter les comptes rendu d'outils métiers"
   overflow: auto;
 </style>
 
-# pytest pour faciliter les comptes rendu d'outils métiers
+# pytest pour faciliter les comptes rendus d'outils métiers
 ### Lighting talk
 24 juin 2025 - Meetup Python Grenoble - [turbine.coop](https://turbine.coop/)
 
@@ -18,31 +18,31 @@ title: "Pytest pour faciliter les comptes rendu d'outils métiers"
 Guillaume Urard
 
 - Ingénieur AI/Devops depuis 2019
-- Domaines: Embarqué -> IA -> sysadmin -> devops -> embarqué
+- Domaines : Embarqué -> IA -> sysadmin -> devops -> embarqué
 - Asygn : PME d'électronique
 - Softeux incompris dans une équipe de hardware<!-- .element: class="fragment" -->
 
 ---
 
 # Contexte du métier
-- Des tests de non regréssion sur du code de description matériel (VHDL/Vérilog) existent
+- Des tests de non-régression sur du code de description matériel (VHDL/Verilog) existent
     - Lancés par des outils métiers propriétaires
-    - Execution séquentielle : si le premier fail, les autres ne sont pas exécutés
+    - Exécution séquentielle : si le premier casse, les autres ne sont pas exécutés
     - Sorties diverses et non standardisées
-- Flow peu lisible lors de l'on-boarding 
+- Flow peu lisible pour les nouveaux arrivants
 - Blocs indépendants (IP)
     - Parfois pas si indépendants
-    - "simulations top" nécéssaires systématiquement (et pas que avant livraison)
+    - "simulations top" nécessaires systématiquement (et pas qu'avant livraison)
 
 -v-
 
 ## L'utilisation de Git et de la CI dans ce projet
 
-- Mono repo
+- Mono repository
 - Git en trunk-based
 - La CI peut rester cassée plusieurs semaines <!-- .element: class="fragment" -->
 
-Bonus : push vendredi soir avant de partir en vacances <!-- .element: class="fragment" -->
+Bonus : `git push` vendredi soir avant de partir en vacances <!-- .element: class="fragment" -->
 
 ![trunk based illustration](trunk.png) <!--  .element: max-height="60vh" -->
 
@@ -51,7 +51,9 @@ Bonus : push vendredi soir avant de partir en vacances <!-- .element: class="fra
 
 -v-
 
-## Des tests de non regréssion obscures à lancer...
+## Des tests de non-régression obscurs à lancer...
+
+Exemple avec un outil métier
 
 ```bash [|1,3|5|7,11|15]
 source SETUP/global_setup
@@ -73,6 +75,8 @@ for dir in ${REGMAP_GENERATOR_TEST_DIRS}; do
     cd ../..
 done
 ```
+
+_(temps d'exécution non mesuré par mesure de simplicité)_
 
 -v-
 
@@ -100,7 +104,7 @@ $ tree -h
 
 ## Constat
 - De plus en plus difficile d'avoir une vue d'ensemble
-- Un test cassé peut en cacher un autre (fail fast)
+- Un test cassé peut en cacher un autre (_fail fast_)
 - Mal intégrable en CI
 
 ---
@@ -109,9 +113,9 @@ $ tree -h
 
 - Solution éprouvée dans le monde python
 - Nombreux plugins
-- Facilement hackable
+- Facilement personnalisable
 - Divers formats de sortie
-  - HTML
+  - HTML (plugin pytest-html)
   - Junit
 - Maitrisé par d'autres équipes
 
@@ -119,13 +123,13 @@ $ tree -h
 
 # Implémentations et itérations
 
-Un peu de code python mais pas trop car je suis à la bourre...
+Rapidement...
 
 -v-
 
 ## Agrégation
 
-```python [|8-9|7-9|3-5|11-21]
+```python [|9-10|8-10|4-6|12-22]
 # read_test.py
 import os, pytest
 
@@ -188,7 +192,9 @@ def pytest_itemcollected(item):
 
 ## Résultat : junit
 
-![pytest_junit_white](pytest_html_white.png)
+![junit_pipeline](junit_pipeline.png)
+![junit_mr](junit_mr.png)<!-- .element: class="fragment" -->
+<!-- .element: class="r-stack" -->
 
 ---
 
@@ -201,14 +207,14 @@ def pytest_itemcollected(item):
 - Lecture en cas de problèmes, permet de faire de l'archéologie (`git bisect`)
 - Permet aux softeux de comprendre pourquoi leur code ne fonctionne pas (c'est le hardware qui est cassé)
 - Mesure le temps de chaque test
-- Principe copié pour les tests de compilation `C`
+- Principe copié pour les tests de compilation `C`, qui sont à base de Makefile
 
 -v-
 ## Points négatifs
 
 - Lecture qui n'est pas un réflexe pour les devs hardware, qui préfèrent les tests locaux
 - Robustesse moyenne <!-- .element: class="fragment" -->
-- CI constament cassée à cause du "trunck based"  <!-- .element: class="fragment" -->
+- CI constamment cassée à cause du "trunk based"  <!-- .element: class="fragment" -->
   - Mails de Gitlab CI déclarés en spam ! <!-- .element: class="fragment" -->
 
 -v-
