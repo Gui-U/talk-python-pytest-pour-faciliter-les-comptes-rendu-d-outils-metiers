@@ -30,7 +30,7 @@ Guillaume Urard
     - Exécution séquentielle : si le premier casse, les autres ne sont pas exécutés<!-- .element: class="fragment" -->
     - Sorties diverses et non standardisées<!-- .element: class="fragment" -->
 - Flow peu lisible pour les nouveaux arrivants<!-- .element: class="fragment" -->
-- Blocs indépendants (IP)<!-- .element: class="fragment" -->
+- Blocs indépendants / bloc de circuit électronique (IP)<!-- .element: class="fragment" -->
     - Parfois pas si indépendants<!-- .element: class="fragment" -->
     - "simulations top" nécessaires systématiquement (et pas qu'avant livraison)<!-- .element: class="fragment" -->
 
@@ -114,14 +114,10 @@ $ tree -h
 -v-
 
 ## Constat
-- De plus en plus difficile d'avoir une vue d'ensemble
-<!-- .element: class="fragment" -->
 
-- Un test cassé peut en cacher un autre (_fail fast_)
-<!-- .element: class="fragment" -->
-
-- Mal intégrable en CI
-<!-- .element: class="fragment" -->
+- De plus en plus difficile d'avoir une vue d'ensemble<!-- .element: class="fragment" -->
+- Certains tests sont rarement executés car trop longs pour du local<!-- .element: class="fragment" -->
+- Mal intégrable en CI, sorties peu lisibles<!-- .element: class="fragment" -->
 
 ---
 
