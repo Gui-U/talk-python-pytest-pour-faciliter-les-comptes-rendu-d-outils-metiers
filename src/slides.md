@@ -9,7 +9,10 @@ title: "Pytest pour faciliter les comptes rendu d'outils métiers"
 
 # pytest pour faciliter les comptes rendus d'outils métiers
 ### Lighting talk
-24 juin 2025 - Meetup Python Grenoble - [turbine.coop](https://turbine.coop/)
+
+24 juin 2025 - [Meetup Python Grenoble](https://meetup-python-grenoble.github.io/) - Présenté à  [laturbine.coop](https://turbine.coop/)
+
+[Source des slides sur Github](https://github.com/Gui-U/talk-python-pytest-pour-faciliter-les-comptes-rendu-d-outils-metiers)
 
 ---
 
@@ -45,9 +48,7 @@ Guillaume Urard
 Bonus : _git push_ vendredi soir avant de partir en vacances 
 <!-- .element: class="fragment" -->
 
-![trunk based illustration](trunk.png) <!--  .element: max-height="60vh" -->
-
-<!-- https://posthog.com/product-engineers/trunk-based-development -->
+![[trunk based illustration](https://posthog.com/product-engineers/trunk-based-development)](trunk.png) <!--  .element: max-height="60vh" -->
 
 
 -v-
