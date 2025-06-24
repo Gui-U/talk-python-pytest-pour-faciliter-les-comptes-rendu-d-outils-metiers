@@ -52,6 +52,15 @@ Bonus : _git push_ vendredi soir avant de partir en vacances
 
 -v-
 
+## Contraintes
+
+- Les tests sont déjà écrits et génèrent des fichiers de sortie texte
+- On veut réutiliser les sorties avec un framework de test habituel<!-- .element: class="fragment" -->
+- Ce framework n'a pas à lancer les tests, il a juste à lire les résultats des tests<!-- .element: class="fragment" -->
+- Les résultats des tests contiennent des mots clés à détecter et parser<!-- .element: class="fragment" -->
+
+-v-
+
 ## Des tests de non-régression obscurs à lancer...
 
 Exemple avec un outil métier
@@ -100,6 +109,7 @@ $ tree -h
 ├── [7.0K]  TIMER_RTL_test.txt
 └── [7.5K]  TIMER_SLOW_RTL_test.txt
 ```
+
 
 -v-
 
