@@ -26,23 +26,24 @@ Guillaume Urard
 
 # Contexte du métier
 - Des tests de non-régression sur du code de description matériel (VHDL/Verilog) existent
-    - Lancés par des outils métiers propriétaires
-    - Exécution séquentielle : si le premier casse, les autres ne sont pas exécutés
-    - Sorties diverses et non standardisées
-- Flow peu lisible pour les nouveaux arrivants
-- Blocs indépendants (IP)
-    - Parfois pas si indépendants
-    - "simulations top" nécessaires systématiquement (et pas qu'avant livraison)
+    - Lancés par des outils métiers propriétaires<!-- .element: class="fragment" -->
+    - Exécution séquentielle : si le premier casse, les autres ne sont pas exécutés<!-- .element: class="fragment" -->
+    - Sorties diverses et non standardisées<!-- .element: class="fragment" -->
+- Flow peu lisible pour les nouveaux arrivants<!-- .element: class="fragment" -->
+- Blocs indépendants (IP)<!-- .element: class="fragment" -->
+    - Parfois pas si indépendants<!-- .element: class="fragment" -->
+    - "simulations top" nécessaires systématiquement (et pas qu'avant livraison)<!-- .element: class="fragment" -->
 
 -v-
 
 ## L'utilisation de Git et de la CI dans ce projet
 
-- Mono repository
 - Git en trunk-based
+- Mono repository<!-- .element: class="fragment" -->
 - La CI peut rester cassée plusieurs semaines <!-- .element: class="fragment" -->
 
-Bonus : `git push` vendredi soir avant de partir en vacances <!-- .element: class="fragment" -->
+Bonus : _git push_ vendredi soir avant de partir en vacances 
+<!-- .element: class="fragment" -->
 
 ![trunk based illustration](trunk.png) <!--  .element: max-height="60vh" -->
 
@@ -104,20 +105,25 @@ $ tree -h
 
 ## Constat
 - De plus en plus difficile d'avoir une vue d'ensemble
+<!-- .element: class="fragment" -->
+
 - Un test cassé peut en cacher un autre (_fail fast_)
+<!-- .element: class="fragment" -->
+
 - Mal intégrable en CI
+<!-- .element: class="fragment" -->
 
 ---
 
 # Pourquoi pytest ?
 
-- Solution éprouvée dans le monde python
-- Nombreux plugins
-- Facilement personnalisable
-- Divers formats de sortie
-  - HTML (plugin pytest-html)
-  - Junit
-- Maitrisé par d'autres équipes
+- Solution éprouvée dans le monde python<!-- .element: class="fragment" -->
+- Nombreux plugins<!-- .element: class="fragment" -->
+- Facilement personnalisable<!-- .element: class="fragment" -->
+- Divers formats de sortie<!-- .element: class="fragment" -->
+  - HTML (plugin pytest-html)<!-- .element: class="fragment" -->
+  - Junit<!-- .element: class="fragment" -->
+- Maitrisé par d'autres équipes<!-- .element: class="fragment" -->
 
 ---
 
@@ -205,9 +211,14 @@ def pytest_itemcollected(item):
 ## Points positifs
 
 - Lecture en cas de problèmes, permet de faire de l'archéologie (`git bisect`)
-- Permet aux softeux de comprendre pourquoi leur code ne fonctionne pas (c'est le hardware qui est cassé)
-- Mesure le temps de chaque test
+<!-- .element: class="fragment" -->
+
+- Permet aux softeux de comprendre pourquoi leur code ne fonctionne pas (c'est le hardware qui est cassé)<!-- .element: class="fragment" -->
+
+- Mesure le temps de chaque test<!-- .element: class="fragment" -->
+
 - Principe copié pour les tests de compilation `C`, qui sont à base de Makefile
+<!-- .element: class="fragment" -->
 
 -v-
 ## Points négatifs
